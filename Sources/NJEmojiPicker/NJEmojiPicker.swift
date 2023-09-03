@@ -106,11 +106,11 @@ public struct NJEmojiPicker: View {
                         // Emoji List
                         if #available(iOS 14.0, *) {
                             LazyVStack {
-                                emojiView(rows: rows, cnt: cnt, width: width)
+                                emojiView(rows: rows, cnt: cnt, type: type, width: width)
                             }
                         } else {
                             VStack {
-                                emojiView(rows: rows, cnt: cnt, width: width)
+                                emojiView(rows: rows, cnt: cnt, type: type, width: width)
                             }
                         }
                     }
@@ -138,7 +138,7 @@ public struct NJEmojiPicker: View {
     
     //MARK: Emoji Item View
     
-    func emojiView(rows: Int, cnt: Int, width: CGFloat) -> some View {
+    func emojiView(rows: Int, cnt: Int, type: ((String, String), [String]), width: CGFloat) -> some View {
         ForEach(0..<rows, id: \.self) { row in
             HStack {
                 ForEach(0..<column, id: \.self) { idx in
