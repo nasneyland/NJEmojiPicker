@@ -103,67 +103,14 @@ public struct NJEmojiPicker: View {
                         let cnt = type.1.count // 이모지 개수
                         let rows = (cnt / column) + ((cnt % column) == 0 ? 0 : 1) // 전체 행 개수
 
-                        LazyVStack {
-                            ForEach(0..<rows, id: \.self) { row in
-                                HStack {
-                                    ForEach(0..<column, id: \.self) { idx in
-                                        let item = (column * row) + idx
-                                        
-                                        if idx != 0 {
-                                            Spacer()
-                                        }
-                                        
-                                        // 이모지 박스
-                                        if cnt > item {
-                                            let emoji = type.1[item]
-                                            let isSelected = selectedEmojiList.contains(emoji)
-                                            
-                                            ZStack {
-                                                
-                                                // 이모지 순서
-                                                if let index = selectedEmojiList.firstIndex(of: emoji), multipleSelect {
-                                                    Text("\(index + 1)")
-                                                        .font(.system(size: 12))
-                                                        .frame(width: 16, height: 16)
-                                                        .background(accentColor)
-                                                        .cornerRadius(8)
-                                                        .padding(EdgeInsets(top: 0, leading: width - 10, bottom: width - 10, trailing: 0))
-                                                        .zIndex(2)
-                                                        .foregroundColor(textColor)
-                                                }
-                                                
-                                                Button {
-                                                    // 이모지 클릭 이벤트
-                                                    if multipleSelect {
-                                                        if let index = selectedEmojiList.firstIndex(of: emoji) {
-                                                            selectedEmojiList.remove(at: index)
-                                                        } else {
-                                                            selectedEmojiList.append(emoji)
-                                                        }
-                                                    } else {
-                                                        selectedEmojiList.append(emoji)
-                                                        presentationMode.wrappedValue.dismiss()
-                                                    }
-                                                } label: {
-                                                    Text(emoji)
-                                                }
-                                                .frame(width: width, height: width)
-                                                .background(isSelected && multipleSelect ? .white : Color(red: 245 / 255, green: 245 / 255, blue: 245 / 255))
-                                                .cornerRadius(15)
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 15)
-                                                        .stroke(accentColor, lineWidth: isSelected && multipleSelect ? 2 : 0)
-                                                )
-                                            }
-                                            .frame(width: width + 7, height: width + 7)
-                                        } else {
-                                            Text("")
-                                                .frame(width: width, height: width)
-                                        }
-                                        
-                                    }
-                                }
-                                .frame(maxWidth:. infinity)
+                        // Emoji List
+                        if #available(iOS 14.0, *) {
+                            LazyVStack {
+                                emojiView(rows: rows, cnt: cnt, width: width)
+                            }
+                        } else {
+                            VStack {
+                                emojiView(rows: rows, cnt: cnt, width: width)
                             }
                         }
                     }
@@ -186,6 +133,71 @@ public struct NJEmojiPicker: View {
         .padding(20)
         .onAppear {
             selectedEmojiList = []
+        }
+    }
+    
+    //MARK: Emoji Item View
+    
+    func emojiView(rows: Int, cnt: Int, width: CGFloat) -> some View {
+        ForEach(0..<rows, id: \.self) { row in
+            HStack {
+                ForEach(0..<column, id: \.self) { idx in
+                    let item = (column * row) + idx
+                    
+                    if idx != 0 {
+                        Spacer()
+                    }
+                    
+                    // 이모지 박스
+                    if cnt > item {
+                        let emoji = type.1[item]
+                        let isSelected = selectedEmojiList.contains(emoji)
+                        
+                        ZStack {
+                            
+                            // 이모지 순서
+                            if let index = selectedEmojiList.firstIndex(of: emoji), multipleSelect {
+                                Text("\(index + 1)")
+                                    .font(.system(size: 12))
+                                    .frame(width: 16, height: 16)
+                                    .background(accentColor)
+                                    .cornerRadius(8)
+                                    .padding(EdgeInsets(top: 0, leading: width - 10, bottom: width - 10, trailing: 0))
+                                    .zIndex(2)
+                                    .foregroundColor(textColor)
+                            }
+                            
+                            Button {
+                                // 이모지 클릭 이벤트
+                                if multipleSelect {
+                                    if let index = selectedEmojiList.firstIndex(of: emoji) {
+                                        selectedEmojiList.remove(at: index)
+                                    } else {
+                                        selectedEmojiList.append(emoji)
+                                    }
+                                } else {
+                                    selectedEmojiList.append(emoji)
+                                    presentationMode.wrappedValue.dismiss()
+                                }
+                            } label: {
+                                Text(emoji)
+                            }
+                            .frame(width: width, height: width)
+                            .background(isSelected && multipleSelect ? .white : Color(red: 245 / 255, green: 245 / 255, blue: 245 / 255))
+                            .cornerRadius(15)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(accentColor, lineWidth: isSelected && multipleSelect ? 2 : 0)
+                            )
+                        }
+                        .frame(width: width + 7, height: width + 7)
+                    } else {
+                        Text("")
+                            .frame(width: width, height: width)
+                    }
+                }
+            }
+            .frame(maxWidth:. infinity)
         }
     }
 }
