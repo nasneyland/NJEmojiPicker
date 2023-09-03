@@ -103,7 +103,7 @@ public struct NJEmojiPicker: View {
                         let cnt = type.1.count // 이모지 개수
                         let rows = (cnt / column) + ((cnt % column) == 0 ? 0 : 1) // 전체 행 개수
 
-                        VStack {
+                        LazyVStack {
                             ForEach(0..<rows, id: \.self) { row in
                                 HStack {
                                     ForEach(0..<column, id: \.self) { idx in
